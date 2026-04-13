@@ -318,7 +318,7 @@ export default async function LandingPage() {
             borderTop: "1px solid rgba(255,255,255,0.1)",
           }}>
             {[
-              { num: "500+", label: "pacientes gestionados" },
+              { num: "+10", label: "años de experiencia clínica" },
               { num: "< 1 día", label: "tiempo de onboarding" },
               { num: "100%", label: "web — sin instalación" },
             ].map(stat => (
