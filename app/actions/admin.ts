@@ -104,6 +104,57 @@ export async function crearAsistenta(datos: {
   return { success: true };
 }
 
+export async function actualizarCredencialesMedico(datos: {
+  usuarioId: string;
+  profesionalId: string;
+  email?: string;
+  password?: string;
+}) {
+  const admin = await verificarAdmin();
+  if (!admin) return { error: "No autorizado" };
+
+  const adminClient = createAdminClient();
+
+  const authUpdate: { email?: string; password?: string } = {};
+  if (datos.email) authUpdate.email = datos.email;
+  if (datos.password) authUpdate.password = datos.password;
+
+  // Verificar que el usuario a editar sea médico (nunca super_admin)
+  const { data: usuarioTarget } = await adminClient
+    .from("usuarios")
+    .select("rol")
+    .eq("id", datos.usuarioId)
+    .single();
+  if (!usuarioTarget || usuarioTarget.rol !== "medico") {
+    return { error: "Solo se pueden editar credenciales de médicos" };
+  }
+
+  if (Object.keys(authUpdate).length > 0) {
+    const { error: authError } = await adminClient.auth.admin.updateUserById(
+      datos.usuarioId,
+      authUpdate
+    );
+    if (authError) return { error: authError.message };
+  }
+
+  if (datos.email) {
+    const { error: usuarioError } = await adminClient
+      .from("usuarios")
+      .update({ email: datos.email })
+      .eq("id", datos.usuarioId);
+    if (usuarioError) return { error: usuarioError.message };
+
+    const { error: profError } = await adminClient
+      .from("profesionales")
+      .update({ email: datos.email })
+      .eq("id", datos.profesionalId);
+    if (profError) return { error: profError.message };
+  }
+
+  revalidatePath("/admin/medicos");
+  return { success: true };
+}
+
 export async function asignarMedico(asistenteId: string, medicoId: string) {
   const admin = await verificarAdmin();
   if (!admin) return { error: "No autorizado" };
