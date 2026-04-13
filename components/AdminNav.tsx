@@ -78,11 +78,11 @@ export default function AdminNav({ nombre, email }: { nombre: string; email: str
         </div>
 
         {/* Tabs */}
-        <nav style={{ display: "flex", gap: "4px", marginBottom: "-1px" }}>
+        <nav style={{ display: "flex", gap: "4px", marginBottom: "-1px", overflowX: "auto", scrollbarWidth: "none" }}>
           {TABS.map((tab) => {
             const active = pathname.startsWith(tab.href);
             return (
-              <Link key={tab.href} href={tab.href} className={`om-tab${active ? " om-tab-active" : ""}`}>
+              <Link key={tab.href} href={tab.href} className={`om-tab${active ? " om-tab-active" : ""}`} style={{ whiteSpace: "nowrap", flexShrink: 0 }}>
                 {tab.label}
               </Link>
             );
