@@ -67,11 +67,10 @@ export default function NavHeader({ nombre: nombreInicial, especialidad: especia
                 </p>
                 <p style={{
                   fontFamily: "var(--font-outfit-var, sans-serif)",
-                  fontSize: "11px", color: "rgba(255,255,255,0.6)", lineHeight: 1,
-                  marginTop: "2px", letterSpacing: "0.01em", maxWidth: "160px",
-                  overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
+                  fontSize: "10.5px", color: "rgba(255,255,255,0.55)", lineHeight: 1,
+                  marginTop: "2px", letterSpacing: "0.06em", textTransform: "uppercase",
                 }}>
-                  {especialidad}
+                  Médico
                 </p>
               </div>
             </div>
@@ -117,9 +116,14 @@ export default function NavHeader({ nombre: nombreInicial, especialidad: especia
                   }}
                 >
                   <div className="om-avatar">{initials}</div>
-                  <span style={{ fontFamily: "var(--font-outfit-var, sans-serif)", fontSize: "13.5px", fontWeight: 500, color: "#FFFFFF" }}>
-                    {nombre}
-                  </span>
+                  <div style={{ textAlign: "left" }}>
+                    <p style={{ fontFamily: "var(--font-outfit-var, sans-serif)", fontSize: "13.5px", fontWeight: 500, color: "#FFFFFF", lineHeight: 1.2 }}>
+                      {nombre}
+                    </p>
+                    <p style={{ fontFamily: "var(--font-outfit-var, sans-serif)", fontSize: "11px", color: "rgba(255,255,255,0.6)", lineHeight: 1, marginTop: "2px" }}>
+                      {especialidad}
+                    </p>
+                  </div>
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.7)" strokeWidth="2.5" strokeLinecap="round"
                     style={{ transition: "transform 0.15s ease", transform: menuAbierto ? "rotate(180deg)" : "rotate(0deg)" }}>
                     <polyline points="6 9 12 15 18 9" />
