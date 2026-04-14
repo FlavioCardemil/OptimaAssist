@@ -1,5 +1,6 @@
 "use client";
 
+import { Fragment } from "react";
 import Link from "next/link";
 import { ESTADOS, ESTADO_CONFIG, type EstadoPaciente, type PacienteConEstado } from "@/lib/types";
 import SelectorEstado from "./SelectorEstado";
@@ -40,86 +41,132 @@ export default function PacientesAgrupados({ pacientes, onEditar, medicosPorId }
   const colSpan = medicosPorId ? 6 : 5;
 
   return (
-    <div className="om-table-wrap">
-      <table className="om-table">
-        <thead>
-          <tr>
-            <th>Paciente</th>
-            <th>RUT</th>
-            <th>Estado</th>
-            {medicosPorId && <th>Médico</th>}
-            <th>Última sesión</th>
-            <th style={{ width: "44px" }} />
-          </tr>
-        </thead>
-        <tbody>
-          {grupos.map(({ estado, pacientes: grupo }) => {
-            const config = ESTADO_CONFIG[estado as EstadoPaciente];
-            const st = ESTADO_STYLE[estado as EstadoPaciente];
-            return (
-              <>
-                {/* Group header row */}
-                <tr key={`header-${estado}`}>
-                  <td colSpan={colSpan} style={{ padding: "8px 16px", background: st.bg, borderBottom: `1px solid ${st.color}22` }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                      <span style={{ fontFamily: "var(--font-outfit-var, sans-serif)", fontSize: "12.5px", fontWeight: 700, color: st.color }}>
-                        {config.label}
-                      </span>
-                      <span style={{ fontFamily: "var(--font-outfit-var, sans-serif)", fontSize: "12px", color: st.color, opacity: 0.6, fontWeight: 500 }}>
-                        · {grupo.length} {grupo.length === 1 ? "paciente" : "pacientes"}
-                      </span>
-                    </div>
-                  </td>
-                </tr>
+    <>
+      <style>{`
+        @media (max-width: 639px) { .om-pacientes-desktop { display: none !important; } }
+        @media (min-width: 640px) { .om-pacientes-mobile { display: none !important; } }
+      `}</style>
 
-                {/* Patient rows */}
-                {grupo.map((p) => (
-                  <tr key={p.id} className="group">
-                    <td>
-                      <Link href={`/pacientes/${p.id}`} style={{ textDecoration: "none", display: "block" }}>
-                        <p style={{ fontWeight: 600, color: "#1C1917", fontSize: "14px", transition: "color 0.12s ease" }}
-                          onMouseEnter={e => (e.currentTarget.style.color = "#0B6E72")}
-                          onMouseLeave={e => (e.currentTarget.style.color = "#1C1917")}
-                        >
-                          {p.nombre} {p.apellido}
-                        </p>
-                        {p.email && <p style={{ fontSize: "12px", color: "#9B9188", marginTop: "1px" }}>{p.email}</p>}
-                      </Link>
-                    </td>
-                    <td>
-                      <span style={{ fontFamily: "var(--font-outfit-var, sans-serif)", fontSize: "13px", color: "#78716C", letterSpacing: "0.02em" }}>
-                        {p.rut}
-                      </span>
-                    </td>
-                    <td>
-                      <SelectorEstado pacienteId={p.id} sesionId={p.sesion_id} estadoActual={p.estado_actual} />
-                    </td>
-                    {medicosPorId && (
-                      <td style={{ fontSize: "13px", color: "#78716C" }}>{medicosPorId[p.profesional_id] ?? "—"}</td>
-                    )}
-                    <td style={{ fontSize: "13px", color: "#9B9188" }}>{formatFecha(p.fecha_ultima_sesion)}</td>
-                    <td>
-                      <button
-                        onClick={() => onEditar(p)}
-                        title="Editar"
-                        style={{ opacity: 0, padding: "6px", borderRadius: "6px", background: "transparent", border: "none", cursor: "pointer", color: "#78716C", transition: "all 0.12s ease", display: "flex" }}
-                        className="group-hover:!opacity-100"
-                        onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "#F0EFEB"; (e.currentTarget as HTMLButtonElement).style.color = "#0B6E72"; }}
-                        onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = "transparent"; (e.currentTarget as HTMLButtonElement).style.color = "#78716C"; }}
-                      >
-                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                        </svg>
-                      </button>
+      {/* ── Desktop: tabla ── */}
+      <div className="om-table-wrap om-pacientes-desktop">
+        <table className="om-table">
+          <thead>
+            <tr>
+              <th>Paciente</th>
+              <th>RUT</th>
+              <th>Estado</th>
+              {medicosPorId && <th>Médico</th>}
+              <th>Última sesión</th>
+              <th style={{ width: "44px" }} />
+            </tr>
+          </thead>
+          <tbody>
+            {grupos.map(({ estado, pacientes: grupo }) => {
+              const config = ESTADO_CONFIG[estado as EstadoPaciente];
+              const st = ESTADO_STYLE[estado as EstadoPaciente];
+              return (
+                <Fragment key={estado}>
+                  <tr>
+                    <td colSpan={colSpan} style={{ padding: "8px 16px", background: st.bg, borderBottom: `1px solid ${st.color}22` }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                        <span style={{ fontFamily: "var(--font-outfit-var, sans-serif)", fontSize: "12.5px", fontWeight: 700, color: st.color }}>{config.label}</span>
+                        <span style={{ fontFamily: "var(--font-outfit-var, sans-serif)", fontSize: "12px", color: st.color, opacity: 0.6, fontWeight: 500 }}>· {grupo.length} {grupo.length === 1 ? "paciente" : "pacientes"}</span>
+                      </div>
                     </td>
                   </tr>
+                  {grupo.map((p) => (
+                    <tr key={p.id} className="group">
+                      <td>
+                        <Link href={`/pacientes/${p.id}`} style={{ textDecoration: "none", display: "block" }}>
+                          <p style={{ fontWeight: 600, color: "#1C1917", fontSize: "14px", transition: "color 0.12s ease" }}
+                            onMouseEnter={e => (e.currentTarget.style.color = "#0B6E72")}
+                            onMouseLeave={e => (e.currentTarget.style.color = "#1C1917")}
+                          >{p.nombre} {p.apellido}</p>
+                          {p.email && <p style={{ fontSize: "12px", color: "#9B9188", marginTop: "1px" }}>{p.email}</p>}
+                        </Link>
+                      </td>
+                      <td><span style={{ fontFamily: "var(--font-outfit-var, sans-serif)", fontSize: "13px", color: "#78716C", letterSpacing: "0.02em" }}>{p.rut}</span></td>
+                      <td><SelectorEstado pacienteId={p.id} sesionId={p.sesion_id} estadoActual={p.estado_actual} /></td>
+                      {medicosPorId && <td style={{ fontSize: "13px", color: "#78716C" }}>{medicosPorId[p.profesional_id] ?? "—"}</td>}
+                      <td style={{ fontSize: "13px", color: "#9B9188" }}>{formatFecha(p.fecha_ultima_sesion)}</td>
+                      <td>
+                        <button onClick={() => onEditar(p)} title="Editar"
+                          style={{ opacity: 0, padding: "6px", borderRadius: "6px", background: "transparent", border: "none", cursor: "pointer", color: "#78716C", transition: "all 0.12s ease", display: "flex" }}
+                          className="group-hover:!opacity-100"
+                          onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "#F0EFEB"; (e.currentTarget as HTMLButtonElement).style.color = "#0B6E72"; }}
+                          onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = "transparent"; (e.currentTarget as HTMLButtonElement).style.color = "#78716C"; }}
+                        >
+                          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                          </svg>
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </Fragment>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+
+      {/* ── Móvil: cards ── */}
+      <div className="om-pacientes-mobile" style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+        {grupos.map(({ estado, pacientes: grupo }) => {
+          const config = ESTADO_CONFIG[estado as EstadoPaciente];
+          const st = ESTADO_STYLE[estado as EstadoPaciente];
+          return (
+            <div key={estado}>
+              {/* Group label */}
+              <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "8px", paddingLeft: "2px" }}>
+                <span style={{ fontFamily: "var(--font-outfit-var, sans-serif)", fontSize: "12px", fontWeight: 700, color: st.color, background: st.bg, padding: "2px 10px", borderRadius: "99px" }}>
+                  {config.label}
+                </span>
+                <span style={{ fontFamily: "var(--font-outfit-var, sans-serif)", fontSize: "12px", color: "#9B9188" }}>
+                  {grupo.length} {grupo.length === 1 ? "paciente" : "pacientes"}
+                </span>
+              </div>
+              {/* Cards */}
+              <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                {grupo.map((p) => (
+                  <button
+                    key={p.id}
+                    onClick={() => onEditar(p)}
+                    style={{
+                      width: "100%", textAlign: "left", background: "#FFFFFF",
+                      border: "1px solid rgba(0,0,0,0.07)", borderRadius: "12px",
+                      padding: "14px 16px", cursor: "pointer",
+                      display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px",
+                      transition: "background 0.1s ease",
+                    }}
+                    onTouchStart={e => (e.currentTarget.style.background = "#F5F4F1")}
+                    onTouchEnd={e => (e.currentTarget.style.background = "#FFFFFF")}
+                  >
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <p style={{ fontFamily: "var(--font-outfit-var, sans-serif)", fontWeight: 600, fontSize: "14px", color: "#1C1917" }}>
+                        {p.nombre} {p.apellido}
+                      </p>
+                      <div style={{ display: "flex", alignItems: "center", gap: "8px", marginTop: "4px", flexWrap: "wrap" }}>
+                        <span style={{ fontFamily: "var(--font-outfit-var, sans-serif)", fontSize: "12px", color: "#9B9188" }}>{p.rut}</span>
+                        {medicosPorId && p.profesional_id && (
+                          <span style={{ fontFamily: "var(--font-outfit-var, sans-serif)", fontSize: "12px", color: "#B0A89F" }}>· {medicosPorId[p.profesional_id] ?? ""}</span>
+                        )}
+                        {p.fecha_ultima_sesion && (
+                          <span style={{ fontFamily: "var(--font-outfit-var, sans-serif)", fontSize: "12px", color: "#B0A89F" }}>· {formatFecha(p.fecha_ultima_sesion)}</span>
+                        )}
+                      </div>
+                    </div>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#D6D3D1" strokeWidth="2.5" strokeLinecap="round" style={{ flexShrink: 0 }}>
+                      <polyline points="9 18 15 12 9 6"/>
+                    </svg>
+                  </button>
                 ))}
-              </>
-            );
-          })}
-        </tbody>
-      </table>
-    </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </>
   );
 }

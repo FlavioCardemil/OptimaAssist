@@ -152,36 +152,36 @@ export default function NavHeader({ nombre: nombreInicial, especialidad: especia
                 )}
               </div>
 
-              {/* Avatar solo (móvil) */}
-              <div className="om-avatar sm:hidden">{initials}</div>
-
-              {/* Hamburguesa (móvil) */}
-              <button
-                className="sm:hidden"
-                onClick={() => setMobileMenuAbierto((v) => !v)}
-                style={{
-                  width: "36px", height: "36px", borderRadius: "8px",
-                  background: mobileMenuAbierto ? "rgba(255,255,255,0.18)" : "transparent",
-                  border: "1px solid rgba(255,255,255,0.2)",
-                  display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer",
-                }}
-              >
-                {mobileMenuAbierto ? (
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.9)" strokeWidth="2.5" strokeLinecap="round">
-                    <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-                  </svg>
-                ) : (
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.9)" strokeWidth="2.5" strokeLinecap="round">
-                    <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
-                  </svg>
-                )}
-              </button>
+              {/* Avatar + hamburguesa — solo móvil */}
+              <style>{`@media (min-width: 640px) { .om-nav-mobile { display: none !important; } }`}</style>
+              <div className="om-nav-mobile" style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                <div className="om-avatar">{initials}</div>
+                <button
+                  onClick={() => setMobileMenuAbierto((v) => !v)}
+                  style={{
+                    width: "36px", height: "36px", borderRadius: "8px",
+                    background: mobileMenuAbierto ? "rgba(255,255,255,0.18)" : "transparent",
+                    border: "1px solid rgba(255,255,255,0.2)",
+                    display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer",
+                  }}
+                >
+                  {mobileMenuAbierto ? (
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.9)" strokeWidth="2.5" strokeLinecap="round">
+                      <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                  ) : (
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.9)" strokeWidth="2.5" strokeLinecap="round">
+                      <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+                    </svg>
+                  )}
+                </button>
+              </div>
             </div>
           </div>
 
           {/* Menú móvil desplegable */}
           {mobileMenuAbierto && (
-            <div className="sm:hidden" style={{ borderTop: "1px solid rgba(255,255,255,0.12)", paddingBottom: "12px" }}>
+            <div className="om-nav-mobile" style={{ borderTop: "1px solid rgba(255,255,255,0.12)", paddingBottom: "12px" }}>
               <div style={{ display: "flex", flexDirection: "column", gap: "2px", paddingTop: "8px" }}>
                 {NAV.map(({ href, label }) => {
                   const active = pathname === href;

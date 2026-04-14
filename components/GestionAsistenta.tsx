@@ -72,13 +72,14 @@ export default function GestionAsistenta({ pacientes, medicos, medicoFiltro }: P
             {pacientes.length} {pacientes.length === 1 ? "paciente" : "pacientes"} en total
           </p>
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+        {/* Controles: stack en móvil, fila en desktop */}
+        <div style={{ display: "flex", flexDirection: "column", gap: "8px", width: "100%" }} className="sm:!flex-row sm:!items-center sm:!w-auto">
           {medicos.length > 1 && (
             <select
               value={medicoFiltro ?? ""}
               onChange={handleMedicoChange}
               className="om-input"
-              style={{ cursor: "pointer", width: "auto" }}
+              style={{ cursor: "pointer", width: "100%" }}
             >
               <option value="">Todos los médicos</option>
               {medicos.map((m) => (
@@ -86,7 +87,11 @@ export default function GestionAsistenta({ pacientes, medicos, medicoFiltro }: P
               ))}
             </select>
           )}
-          <button className="om-btn om-btn-primary" onClick={() => { setPacienteEditando(null); setModalAbierto(true); }}>
+          <button
+            className="om-btn om-btn-primary"
+            style={{ justifyContent: "center", width: "100%" }}
+            onClick={() => { setPacienteEditando(null); setModalAbierto(true); }}
+          >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             Nuevo paciente
           </button>
