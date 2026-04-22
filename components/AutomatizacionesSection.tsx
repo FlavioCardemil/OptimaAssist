@@ -108,7 +108,7 @@ function AutomatizacionItem({
   const descripcion = describir(a.tipo, a.configuracion);
   const emoji = emojiTipo(a.tipo);
 
-  const ESTADOS_ORDEN: EstadoAutomatizacion[] = ["pendiente", "enviado", "completado"];
+  const ESTADOS_ORDEN: EstadoAutomatizacion[] = ["pendiente", "mensaje1_enviado", "mensaje2_enviado", "completado", "sin_recordatorio"];
 
   return (
     <li className={`flex items-start gap-3 p-3 rounded-xl border border-slate-200 bg-white transition-opacity ${isPending ? "opacity-50" : ""}`}>
