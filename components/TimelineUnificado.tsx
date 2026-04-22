@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
 import type { Automatizacion, EstadoPaciente, EstadoAutomatizacion } from "@/lib/types";
 import { describir, emojiTipo, ESTADO_AUTO_CONFIG } from "@/lib/automatizaciones";
 import { eliminarAutomatizacion, actualizarEstadoAutomatizacion } from "@/app/actions/automatizaciones";
@@ -55,6 +56,40 @@ export default function TimelineUnificado({ pacienteId, sesiones, automatizacion
   const [listaAutos, setListaAutos] = useState(inicial);
   const [modalAutoAbierto, setModalAutoAbierto] = useState(false);
   const [modalNotaAbierto, setModalNotaAbierto] = useState(false);
+
+  useEffect(() => {
+    const supabase = createClient();
+    const channel = supabase
+      .channel(`automatizaciones-paciente-${pacienteId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "automatizaciones",
+          filter: `paciente_id=eq.${pacienteId}`,
+        },
+        (payload) => {
+          if (payload.eventType === "INSERT") {
+            setListaAutos((prev) => {
+              const existe = prev.some((a) => a.id === (payload.new as Automatizacion).id);
+              return existe ? prev : [...prev, payload.new as Automatizacion];
+            });
+          } else if (payload.eventType === "UPDATE") {
+            setListaAutos((prev) =>
+              prev.map((a) => (a.id === payload.new.id ? (payload.new as Automatizacion) : a))
+            );
+          } else if (payload.eventType === "DELETE") {
+            setListaAutos((prev) => prev.filter((a) => a.id !== payload.old.id));
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [pacienteId]);
 
   const eventos: Evento[] = [
     ...sesiones
@@ -211,7 +246,7 @@ function EventoAutomatizacion({ auto: a, isLast, onEliminar, onEstado }: {
   const descripcion = describir(a.tipo, a.configuracion);
   const emoji = emojiTipo(a.tipo);
 
-  const ESTADOS_ORDEN: EstadoAutomatizacion[] = ["pendiente", "enviado", "completado"];
+  const ESTADOS_ORDEN: EstadoAutomatizacion[] = ["pendiente", "mensaje1_enviado", "mensaje2_enviado", "completado", "sin_recordatorio"];
 
   return (
     <li style={{ marginLeft: "20px", paddingBottom: isLast ? 0 : "18px", opacity: isPending ? 0.5 : 1 }}>

@@ -82,7 +82,9 @@ export const ESTADO_AUTO_CONFIG: Record<
   string,
   { label: string; bg: string; text: string; bgHex: string; colorHex: string }
 > = {
-  pendiente:  { label: "Pendiente",  bg: "bg-amber-100", text: "text-amber-700", bgHex: "#FFFBEB", colorHex: "#B45309" },
-  enviado:    { label: "Enviado",    bg: "bg-blue-100",  text: "text-blue-700",  bgHex: "#EFF6FF", colorHex: "#1D4ED8" },
-  completado: { label: "Completado", bg: "bg-green-100", text: "text-green-700", bgHex: "#ECFDF5", colorHex: "#047857" },
+  pendiente:         { label: "Pendiente",             bg: "bg-amber-100",  text: "text-amber-700",  bgHex: "#FFFBEB", colorHex: "#B45309" },
+  mensaje1_enviado:  { label: "Contactado",             bg: "bg-blue-100",   text: "text-blue-700",   bgHex: "#EFF6FF", colorHex: "#1D4ED8" },
+  mensaje2_enviado:  { label: "Recordatorio enviado",   bg: "bg-violet-100", text: "text-violet-700", bgHex: "#F5F3FF", colorHex: "#6D28D9" },
+  completado:        { label: "Completado",             bg: "bg-green-100",  text: "text-green-700",  bgHex: "#ECFDF5", colorHex: "#047857" },
+  sin_recordatorio:  { label: "Sin recordatorio",       bg: "bg-stone-100",  text: "text-stone-500",  bgHex: "#F5F5F4", colorHex: "#78716C" },
 };

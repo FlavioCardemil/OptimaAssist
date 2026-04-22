@@ -116,7 +116,7 @@ export type TipoAutomatizacion =
   | "tomar_examen"
   | "visitar_especialista";
 
-export type EstadoAutomatizacion = "pendiente" | "enviado" | "completado";
+export type EstadoAutomatizacion = "pendiente" | "mensaje1_enviado" | "mensaje2_enviado" | "completado" | "sin_recordatorio";
 export type UnidadTiempo = "dias" | "semanas" | "meses";
 export type ModoEspecialista = "tipo" | "nombre";
 
