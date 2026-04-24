@@ -5,6 +5,7 @@ import Link from "next/link";
 import type { PacienteConEstado } from "@/lib/types";
 import TablaPacientesAdmin from "./TablaPacientesAdmin";
 import ModalEditarCredenciales from "@/components/admin/ModalEditarCredenciales";
+import BotonCrearPacienteAdmin from "./BotonCrearPacienteAdmin";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -66,9 +67,12 @@ export default async function AdminMedicoDetallePage({ params }: Props) {
         </div>
       </div>
 
-      <p style={{ fontFamily: "var(--font-outfit-var, sans-serif)", fontSize: "13px", color: "#9B9188", marginBottom: "16px" }}>
-        {pacientes.length} {pacientes.length === 1 ? "paciente" : "pacientes"} · solo lectura
-      </p>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "16px" }}>
+        <p style={{ fontFamily: "var(--font-outfit-var, sans-serif)", fontSize: "13px", color: "#9B9188" }}>
+          {pacientes.length} {pacientes.length === 1 ? "paciente" : "pacientes"}
+        </p>
+        <BotonCrearPacienteAdmin profesionalId={profesional.id} nombreMedico={profesional.nombre} />
+      </div>
 
       <TablaPacientesAdmin pacientes={pacientes} backUrl={`/admin/medicos/${profesional.id}`} />
     </main>

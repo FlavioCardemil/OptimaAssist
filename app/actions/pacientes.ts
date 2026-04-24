@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { revalidatePath } from "next/cache";
 import type { EstadoPaciente } from "@/lib/types";
 import { validarRut } from "@/lib/rut";
@@ -85,7 +86,16 @@ export async function crearPaciente(datos: DatosPaciente) {
     profesionalId = prof.id;
   }
 
-  const { data: paciente, error: errPaciente } = await supabase
+  // Si el caller es super_admin, usar admin client para saltarse RLS
+  const adminClient = createAdminClient();
+  const { data: usuario } = await adminClient
+    .from("usuarios")
+    .select("rol")
+    .eq("email", user.email!)
+    .single();
+  const dbClient = usuario?.rol === "super_admin" ? adminClient : supabase;
+
+  const { data: paciente, error: errPaciente } = await dbClient
     .from("pacientes")
     .insert({
       nombre: datos.nombre.trim(),
@@ -103,7 +113,7 @@ export async function crearPaciente(datos: DatosPaciente) {
     return { error: errPaciente.message };
   }
 
-  const { error: errSesion } = await supabase.from("sesiones").insert({
+  const { error: errSesion } = await dbClient.from("sesiones").insert({
     paciente_id: paciente.id,
     profesional_id: profesionalId,
     estado: datos.estado,
