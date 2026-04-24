@@ -17,12 +17,16 @@ export default function ModalPaciente({ abierto, onCerrar, onGuardado, paciente,
   const [errores, setErrores] = useState<Partial<Campos>>({});
   const [errorServidor, setErrorServidor] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
+  const [modoTel, setModoTel] = useState<"cl" | "manual">("cl");
   const primerCampoRef = useRef<HTMLInputElement>(null);
   const esEdicion = paciente !== null;
 
   useEffect(() => {
     if (abierto) {
-      setCampos(paciente ? { nombre: paciente.nombre, apellido: paciente.apellido, rut: paciente.rut, telefono: paciente.telefono ?? "", email: paciente.email ?? "", estado: paciente.estado_actual, profesionalId: paciente.profesional_id ?? "" } : { ...VACIO, profesionalId: medicos?.[0]?.id ?? "" });
+      const tel = paciente?.telefono ?? "";
+      const esCL = !tel || tel.startsWith("+569");
+      setModoTel(esCL ? "cl" : "manual");
+      setCampos(paciente ? { nombre: paciente.nombre, apellido: paciente.apellido, rut: paciente.rut, telefono: tel, email: paciente.email ?? "", estado: paciente.estado_actual, profesionalId: paciente.profesional_id ?? "" } : { ...VACIO, profesionalId: medicos?.[0]?.id ?? "" });
       setErrores({}); setErrorServidor(null);
       setTimeout(() => primerCampoRef.current?.focus(), 50);
     }
@@ -100,7 +104,63 @@ export default function ModalPaciente({ abierto, onCerrar, onGuardado, paciente,
                 <input value={campos.rut} onChange={(e) => set("rut", formatearRut(e.target.value))} className={`om-input${errores.rut ? " om-input-error" : ""}`} placeholder="12.345.678-9" maxLength={12} />
               </Campo>
               <Campo label="Teléfono">
-                <input value={campos.telefono} onChange={(e) => set("telefono", e.target.value)} className="om-input" placeholder="+56912345678" type="tel" />
+                {modoTel === "cl" ? (
+                  <div>
+                    <div style={{ display: "flex", alignItems: "center" }}>
+                      <span style={{
+                        display: "inline-flex", alignItems: "center",
+                        padding: "0 12px", height: "38px",
+                        background: "#F5F4F1", border: "1px solid #E7E5E0",
+                        borderRight: "none", borderRadius: "8px 0 0 8px",
+                        fontFamily: "var(--font-outfit-var, sans-serif)",
+                        fontSize: "13.5px", color: "#78716C", flexShrink: 0,
+                        userSelect: "none",
+                      }}>
+                        +569
+                      </span>
+                      <input
+                        value={campos.telefono.startsWith("+569") ? campos.telefono.slice(4) : ""}
+                        onChange={(e) => {
+                          const digits = e.target.value.replace(/\D/g, "").slice(0, 8);
+                          set("telefono", digits ? "+569" + digits : "");
+                        }}
+                        className="om-input"
+                        placeholder="12345678"
+                        type="tel"
+                        inputMode="numeric"
+                        maxLength={8}
+                        style={{ borderRadius: "0 8px 8px 0", flex: 1 }}
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => { setModoTel("manual"); set("telefono", ""); }}
+                      style={{ marginTop: "5px", background: "none", border: "none", padding: 0, cursor: "pointer", fontFamily: "var(--font-outfit-var, sans-serif)", fontSize: "11.5px", color: "#9B9188", textDecoration: "underline" }}
+                    >
+                      Otro país
+                    </button>
+                  </div>
+                ) : (
+                  <div>
+                    <input
+                      value={campos.telefono}
+                      onChange={(e) => set("telefono", e.target.value)}
+                      className="om-input"
+                      placeholder="+44 7911 123456"
+                      type="tel"
+                    />
+                    <p style={{ marginTop: "5px", fontFamily: "var(--font-outfit-var, sans-serif)", fontSize: "11.5px", color: "#B45309" }}>
+                      Incluye siempre el código de país con + (ej: +34, +1, +44)
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => { setModoTel("cl"); set("telefono", ""); }}
+                      style={{ marginTop: "4px", background: "none", border: "none", padding: 0, cursor: "pointer", fontFamily: "var(--font-outfit-var, sans-serif)", fontSize: "11.5px", color: "#9B9188", textDecoration: "underline" }}
+                    >
+                      Volver a Chile (+569)
+                    </button>
+                  </div>
+                )}
               </Campo>
               <Campo label="Email">
                 <input value={campos.email} onChange={(e) => set("email", e.target.value)} className="om-input" placeholder="paciente@email.com" type="email" />
